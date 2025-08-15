@@ -8,21 +8,12 @@ import { enVars } from './config/env';
 
 const port=3000
 
-
 let server:Server
-
-
 
  const startServer= async ()=>{
 
-
-    console.log('envras', enVars)
-
-
-
-
     try{
-          await  mongoose.connect('mongodb://localhost:27017/tour')
+          await  mongoose.connect(enVars.DB_URL)
 
       console.log(' connetced to DB !!!' )
 
@@ -33,9 +24,9 @@ let server:Server
       })
       
       
-    } catch(error){
+    } catch(error:any){
 
-        console.log(error)
+        console.log('error',error.message)
 
     }
    
