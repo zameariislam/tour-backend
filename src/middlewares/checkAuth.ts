@@ -31,10 +31,12 @@ export const chekAuth=(...authRoles:string[])=> async(req:Request,res:Response,n
          
 
         // }
+
         if(!authRoles.includes( verifiedToken.role)){
            throw new AppError('You are not allowed to view this route',403)
 
         }
+        req.user=verifiedToken
 
         next()
 
