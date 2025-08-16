@@ -1,8 +1,10 @@
 
  import mongoose from 'mongoose';
 import{ Server} from 'http';
-import { app } from './app';
+
 import { enVars } from './config/env';
+import { app } from './app';
+import { seedSuperAdmin } from './utils/seedSuperAdmin';
 
 
 
@@ -33,7 +35,17 @@ let server:Server
 
  }
 
- startServer()
+
+
+(
+  async ()=>{
+    await startServer()
+    seedSuperAdmin()
+
+
+ })()
+
+
 
 
 

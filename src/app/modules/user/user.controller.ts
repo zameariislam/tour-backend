@@ -9,13 +9,10 @@ import { sendResponse } from "../../../utils/sendResponse";
 
 
 
+
    const getAllUsers= catchAsnc(async (req,res,next)=>{
 
     const  result= await UserServices.getAllUsers()
-    console.log(result.meta)
-
-    
-   
 
 
 
