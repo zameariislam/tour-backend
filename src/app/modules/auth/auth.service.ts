@@ -1,21 +1,22 @@
 import { AppError } from "../../../errorHelpers/AppError";
-import { IUser } from "../user/user.interface"
+import { IsActive, IUser } from "../user/user.interface"
 import { User } from "../user/user.model";
 import httpStatus from 'http-status-codes';
 import bcrypt from 'bcrypt'
 
-import jwt from 'jsonwebtoken'
-import { generateToken } from "../../../utils/jwt";
+import jwt, { JwtPayload } from 'jsonwebtoken'
+import { generateToken, verifyToken } from "../../../utils/jwt";
 import { enVars } from "../../../config/env";
+import { createNewAccessTokenWithRefreshToken, createUserTokens } from "../../../utils/userTokens";
+
 
  const credentialsLogin=async (payload:Partial<IUser>)=>{
 
     
     const {email,password,...rest}=payload;
 
-    const isUserExist= await User.findOne({email})
+    const isUserExist= await User.findOne({email}).lean()
 
-    
         
            if(!isUserExist){ 
              throw new AppError('User does not Exist',httpStatus.BAD_REQUEST)
@@ -28,22 +29,13 @@ import { enVars } from "../../../config/env";
 
            }
 
-           const jwtPayload={
-            id:isUserExist._id,
-            email:isUserExist.email,
-            role:isUserExist.role
-           }
+          const tokens=createUserTokens(isUserExist)
+            delete isUserExist.password
 
-            // const accessToken= jwt.sign(jwtPayload, 'secret',{
-            //     expiresIn:'1d'
-            // })
-
-            const accessToken= generateToken(jwtPayload, enVars.JWT_ACCESS_SECRET,enVars.JWT_ACCESS_EXPIRES)
-
-
-
+          
            return{
-            accessToken
+            ...tokens,
+            user:isUserExist
 
            }
 
@@ -51,6 +43,96 @@ import { enVars } from "../../../config/env";
  }
 
 
+ const getNewAccessToken=async (refreshToken:string)=>{
+
+
+  const newAccessToken=await createNewAccessTokenWithRefreshToken(refreshToken)
+
+ 
+ 
+
+  return {
+    accessToken:newAccessToken
+  }
+
+
+
+    // const verifiedRefreshToken= verifyToken(refreshToken,enVars.JWT_REFRESH_SECRET) as JwtPayload
+
+    // const isUserExist= await User.findById(verifiedRefreshToken.id)
+
+   
+        
+    //        if(!isUserExist){ 
+    //          throw new AppError('User does not Exist',httpStatus.BAD_REQUEST)
+    
+    //        }
+    //        if(isUserExist.isActive==IsActive.BLOCKED ||isUserExist.isActive==IsActive.INACTIVE ){
+    //          throw new AppError(`User is ${isUserExist.isActive}`,httpStatus.BAD_REQUEST)
+    //        }
+    //        if(isUserExist.isDeleted){
+    //          throw new AppError('User  is Deleted',httpStatus.BAD_REQUEST)
+    //        }
+
+
+           
+    //   const jwtPayload={
+    //             id:isUserExist._id,
+    //             email:isUserExist.email,
+    //             role:isUserExist.role
+    //            }
+
+
+    //        const accessToken=generateToken(jwtPayload, enVars.JWT_ACCESS_SECRET,enVars.JWT_ACCESS_EXPIRES)
+       
+
+      
+
+          //  return{
+          //   accessToken
+
+          //  }
+
+
+ }
+
+
+ const resetPassword=async (oldPassword:string, newPassword:string,decodeToken:JwtPayload)=>{
+
+
+
+  const user= await User.findById(decodeToken.id)
+
+
+   console.log('user avialable')
+
+
+const isPasswordMatched= await bcrypt.compare(oldPassword, user!.password as string);
+  if(!isPasswordMatched){
+
+            throw new AppError('Old Password does not match',httpStatus.UNAUTHORIZED)
+
+    }
+
+    
+    console.log('resetss match')
+
+    const newHashedPassword= await bcrypt.hash(newPassword,Number( enVars.BCRYPT_SALT_ROUND))
+
+
+    user!.password=newHashedPassword;
+    user!.save()
+
+        
+           }
+
+    
+    
+
+    
+
  export const AutServices={
-    credentialsLogin
+    credentialsLogin,
+    getNewAccessToken,
+    resetPassword
  }

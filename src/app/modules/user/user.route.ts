@@ -4,7 +4,7 @@ import { UserControllers } from "./user.controller";
 
 
 import { validateRequest } from "../../../middlewares/validateRequest";
-import { createUserZodSchema } from "./user.validation";
+import { createUserZodSchema, updateUserZodSchema } from "./user.validation";
 
 
 import { chekAuth } from "../../../middlewares/checkAuth";
@@ -60,6 +60,7 @@ const  router=Router()
 
 router.post('/register',  validateRequest(createUserZodSchema),  UserControllers.createUser)
 router.get('/', chekAuth(Role.ADMIN,Role.SUPER_ADMIN)  , UserControllers.getAllUsers)
+router.patch('/:id', validateRequest(updateUserZodSchema), chekAuth( ...Object.values(Role)) , UserControllers.updateUser)
 
 
 export const UserRoutes=router

@@ -6,6 +6,9 @@ import { UserServices } from "./user.service";
 import { AppError } from "../../../errorHelpers/AppError";
 import { catchAsnc } from "../../../utils/catchAsync";
 import { sendResponse } from "../../../utils/sendResponse";
+import { verifyToken } from "../../../utils/jwt";
+import { enVars } from "../../../config/env";
+import { JwtPayload } from "jsonwebtoken";
 
 
 
@@ -53,6 +56,33 @@ import { sendResponse } from "../../../utils/sendResponse";
    }  )
 
 
+    const updateUser=  catchAsnc( async (req:Request,res:Response,next:NextFunction)=>{
+
+       const userId=req.params.id
+
+        const verifiedToken=req.user
+      
+         
+      //  const token= req.headers.authorization;
+      //  if(!token){
+      //     throw new AppError('Token not Found', 403)
+      //  }
+
+      //  const verifiedToken= verifyToken(token, enVars.JWT_ACCESS_SECRET) as JwtPayload
+
+         const user= await UserServices.updateUserService(userId, req.body, verifiedToken )
+
+           sendResponse(res, {
+            statusCode:httpStatus.CREATED,
+            message:'User created Sucessfully',
+            sucess:true,
+            data:user
+
+           })
+        
+   }  )
+
+
     
 
 
@@ -61,5 +91,6 @@ import { sendResponse } from "../../../utils/sendResponse";
 
  export const UserControllers={
     createUser,
-    getAllUsers
+    getAllUsers,
+    updateUser
  }
