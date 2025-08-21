@@ -8,7 +8,7 @@ import { seedSuperAdmin } from './utils/seedSuperAdmin';
 
 
 
-const port=3000
+
 
 let server:Server
 
@@ -19,9 +19,9 @@ let server:Server
 
       console.log(' connetced to DB !!!' )
 
-    server= app.listen(port,()=>{
+    server= app.listen(enVars.PORT,()=>{
 
-         console.log(`Server is running on http://localhost:${port}`);
+         console.log(`Server is running on http://localhost:${enVars.PORT}`);
 
       })
       

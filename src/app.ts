@@ -11,6 +11,8 @@ import { notFound } from './middlewares/notFound';
 
 import cookieParser from 'cookie-parser';
 
+import './config/passport'
+
 
 
 export const app= express()
