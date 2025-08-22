@@ -15,10 +15,10 @@ import { JwtPayload } from "jsonwebtoken";
 
      
        
-       if(isUserExist){ 
-         throw new AppError('User is Already Exist',httpStatus.BAD_REQUEST)
+      //  if(isUserExist){ 
+      //    throw new AppError('User is Already Exist',httpStatus.BAD_REQUEST)
 
-       }
+      //  }
 
        const hashedPassword= await bcrypt.hash(password as string, Number(enVars.BCRYPT_SALT_ROUND ))
 

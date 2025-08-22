@@ -10,13 +10,13 @@ import { enVars } from "../../../config/env"
 const  router=Router()
 
 router.post('/login', AutControllers.credentialsLogin)
+
 router.post('/refresh-token', AutControllers.getNewAccessToken)
 router.post('/logout', AutControllers.logout)
 router.post('/reset-password', chekAuth(...Object.values(Role)), AutControllers.resetPassword)
 router.get('/google',  (req:Request,res:Response,next:NextFunction)=>{
 
-
-    const redirect= req.query.redirect || '/';
+ const redirect= req.query.redirect || '/';
 
 
     passport.authenticate("google",  { scope: ["profile", "email"], state:redirect as string})(req,res)

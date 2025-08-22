@@ -11,8 +11,6 @@ import { createNewAccessTokenWithRefreshToken, createUserTokens } from "../../..
 
 
  const credentialsLogin=async (payload:Partial<IUser>)=>{
-
-    
     const {email,password,...rest}=payload;
 
     const isUserExist= await User.findOne({email}).lean()
@@ -30,6 +28,10 @@ import { createNewAccessTokenWithRefreshToken, createUserTokens } from "../../..
            }
 
           const tokens=createUserTokens(isUserExist)
+
+     
+                 console.log('Exist')
+  
             delete isUserExist.password
 
           
