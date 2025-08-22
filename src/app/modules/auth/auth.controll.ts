@@ -9,42 +9,51 @@ import { setAuthCookie } from "../../../utils/setCookie";
 import { JwtPayload } from "jsonwebtoken";
 import { createUserTokens } from "../../../utils/userTokens";
 import { enVars } from "../../../config/env";
+import passport from "passport";
 
 const credentialsLogin=catchAsnc(async (req:Request,res:Response,next:NextFunction)=>{
 
 
-    const  loginInfo= await AutServices.credentialsLogin(req.body)
+        
+        passport.authenticate('local',  async(err: any, user: any, info: any) =>{
+
+                if(err){
+
+                        return next( new AppError(err,401))
+                }
+                if(!user){
+                          return next( new AppError(info.mesaage,401))
+
+                }
+
+                const userTokens= createUserTokens(user)
+
+                setAuthCookie(res,userTokens)
 
 
-    setAuthCookie(res,loginInfo)
+                const { password,...rest }=user;
 
 
-        // setCookie(res, 'accessToken', loginInfo.accessToken)
-        // setCookie(res, 'refreshToken', loginInfo.refreshToken)
-
-
-//      res.cookie('accessToken',loginInfo.accessToken,{
-//         httpOnly:true,
-//         secure:false
-//     })
-
-
- 
-//     res.cookie('refreshToken',loginInfo.refreshToken,{
-//         httpOnly:true,
-//         secure:false
-//     })
-
-
-
- sendResponse(res, {
+        sendResponse(res, {
             statusCode:httpStatus.OK,
             message:'User loggedin sucessfully !!!',
             sucess:true,
-            data:loginInfo,
+            data: {
+                accessToken: userTokens.accessToken,
+                refreshToken: userTokens.refreshToken,
+                user: rest
+
+            },
            
         
            })
+
+        })(req,res,next)
+
+
+
+
+ 
 
    })
 

@@ -58,7 +58,9 @@ const  router=Router()
 
 // }
 
-router.post('/register',  validateRequest(createUserZodSchema),  UserControllers.createUser)
+router.post('/register', 
+     validateRequest(createUserZodSchema), 
+      UserControllers.createUser)
 router.get('/', chekAuth(Role.ADMIN,Role.SUPER_ADMIN)  , UserControllers.getAllUsers)
 router.patch('/:id', validateRequest(updateUserZodSchema), chekAuth( ...Object.values(Role)) , UserControllers.updateUser)
 
