@@ -70,7 +70,7 @@ import { JwtPayload } from "jsonwebtoken";
 
       //  const verifiedToken= verifyToken(token, enVars.JWT_ACCESS_SECRET) as JwtPayload
 
-         const user= await UserServices.updateUserService(userId, req.body, verifiedToken )
+         const user= await UserServices.updateUserService(userId, req.body, verifiedToken as JwtPayload )
 
            sendResponse(res, {
             statusCode:httpStatus.CREATED,
