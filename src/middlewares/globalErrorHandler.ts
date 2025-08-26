@@ -27,7 +27,7 @@ export const globalErrorHandler= (err:any, req:Request, res:Response, next:NextF
 
 
    if(enVars.NODE_ENV==='development'){
-      console.log(err)
+      // console.log(err)
    }
 
 
@@ -40,6 +40,9 @@ export const globalErrorHandler= (err:any, req:Request, res:Response, next:NextF
    //  duplicate Error 
 
        if(err.code===11000){
+
+
+          console.log('i am from duplicatebbb',err)
 
       const simplifiedError = handlerDuplicateError(err)
         statusCode = simplifiedError.statusCode;

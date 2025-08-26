@@ -2,7 +2,10 @@
   import { Response } from "express";
 
 interface TMeta{
-    total:number
+    total?:number,
+    page?:number;
+     totalPage:number;
+    limit?:number;
 }
 
 type TResponse <T>={
@@ -10,7 +13,7 @@ type TResponse <T>={
     sucess:boolean;
     message:string;
     data:T;
-    meta?:TMeta
+    meta?:TMeta 
 
 }
 
@@ -27,7 +30,10 @@ export const sendResponse = <T>(res: Response, data: TResponse<T>) => {
 
          data:data.data,
          meta:{
-            total:data.meta?.total
+            total:data.meta?.total,
+            page:data.meta?.page,
+             totalPage:data.meta?.totalPage,
+            limit:data.meta?.limit,
          }
         
 
