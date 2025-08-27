@@ -21,7 +21,7 @@ export const chekAuth=(...authRoles:string[])=> async(req:Request,res:Response,n
 
         const accessToken= req.headers.authorization
 
-        console.log(accessToken)
+      
         
         if(!accessToken){
           throw new AppError('No Token received',403)
@@ -34,6 +34,8 @@ export const chekAuth=(...authRoles:string[])=> async(req:Request,res:Response,n
 
 
          const isUserExist= await User.findById(verifiedToken.id)
+
+         
 
         
            if(!isUserExist){ 
@@ -60,7 +62,6 @@ export const chekAuth=(...authRoles:string[])=> async(req:Request,res:Response,n
         }
 
 
-        console.log('auth done')
         req.user=verifiedToken
 
         next()
