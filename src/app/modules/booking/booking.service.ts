@@ -9,14 +9,10 @@ import { Payment } from "../payment/payment.model";
 import { Tour } from "../tour/tour.model";
 import { PAYMENT_STATUS } from "../payment/payment.interface";
 import { SSLService } from "../sslCommerz/sslCommerz.servicets";
+import { getTransactionId } from "../../../utils/getTransactionId";
 
 
 
-
-
-const getTransactionId = () => {
-  return `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-};
 
 
 

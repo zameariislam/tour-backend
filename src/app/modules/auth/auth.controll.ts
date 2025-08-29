@@ -11,52 +11,46 @@ import { createUserTokens } from "../../../utils/userTokens";
 import { enVars } from "../../../config/env";
 import passport from "passport";
 
-const credentialsLogin=catchAsnc(async (req:Request,res:Response,next:NextFunction)=>{
+const credentialsLogin = catchAsnc(async (req: Request, res: Response, next: NextFunction) => {
+    // const loginInfo = await AuthServices.credentialsLogin(req.body)
+
+    passport.authenticate("local", async (err: any, user: any, info: any) => {
+         console.log('user',user,'error',err)
+     if (err) {
+            return next(err); // real system error
+        }
+
+        if (!user) {
+            // login failed → use info.message
+            return next(new AppError(info?.message || "Invalid credentials", 401));
+        }
+
+        const userTokens =  createUserTokens(user)
+
+        // delete user.toObject().password
+
+        const { password: pass, ...rest } = user.toObject()
 
 
-        
-        passport.authenticate('local',  async(err: any, user: any, info: any) =>{
-
-                if(err){
-
-                        return next( new AppError(err,401))
-                }
-                if(!user){
-                          return next( new AppError(info.mesaage,401))
-
-                }
-
-                const userTokens= createUserTokens(user)
-
-                setAuthCookie(res,userTokens)
-
-
-                const { password,...rest }=user;
-
+        setAuthCookie(res, userTokens)
 
         sendResponse(res, {
-            statusCode:httpStatus.OK,
-            message:'User loggedin sucessfully !!!',
-            sucess:true,
+            sucess: true,
+            statusCode: httpStatus.OK,
+            message: "User Logged In Successfully",
             data: {
                 accessToken: userTokens.accessToken,
                 refreshToken: userTokens.refreshToken,
                 user: rest
 
             },
-           
-        
-           })
+        })
+    })(req, res, next)
 
-        })(req,res,next)
-
+    
 
 
-
- 
-
-   })
-
+})
 
 
 
@@ -106,7 +100,7 @@ const getNewAccessToken=catchAsnc(async (req:Request,res:Response,next:NextFunct
 
 
   
-     const logout=catchAsnc(async (req:Request,res:Response,next:NextFunction)=>{
+const logout=catchAsnc(async (req:Request,res:Response,next:NextFunction)=>{
 
 
         res.clearCookie('accessToken',{
@@ -142,14 +136,31 @@ const getNewAccessToken=catchAsnc(async (req:Request,res:Response,next:NextFunct
    })
 
 
-    const resetPassword=catchAsnc(async (req:Request,res:Response,next:NextFunction)=>{
+const resetPassword = catchAsnc(async (req: Request, res: Response, next: NextFunction) => {
+
+    const decodedToken = req.user
+
+    await AutServices.resetPassword(req.body, decodedToken as JwtPayload);
+
+    sendResponse(res, {
+        sucess: true,
+        statusCode: httpStatus.OK,
+        message: "Password Changed Successfully",
+        data: null,
+    })
+})
 
 
-        const decodeToken= req.user;
-        const {oldPassword,newPassword}=req.body
+
+ const setPassword=catchAsnc(async (req:Request,res:Response,next:NextFunction)=>{
+
+
+        const decodeToken= req.user as JwtPayload;
+        const {password}=req.body ;
+       
   
       
-await  AutServices.resetPassword (oldPassword,newPassword, decodeToken as JwtPayload)
+await  AutServices.setPassword ( decodeToken.id ,password)
 
   
 
@@ -165,7 +176,7 @@ await  AutServices.resetPassword (oldPassword,newPassword, decodeToken as JwtPay
 
    })
 
-    const  googleCallbackController=catchAsnc(async (req:Request,res:Response,next:NextFunction)=>{
+const  googleCallbackController=catchAsnc(async (req:Request,res:Response,next:NextFunction)=>{
 
       const user= req.user;
 
@@ -192,6 +203,29 @@ await  AutServices.resetPassword (oldPassword,newPassword, decodeToken as JwtPay
 
    })
 
+   const forgotPassword=catchAsnc(async (req:Request,res:Response,next:NextFunction)=>{
+
+
+       
+        const {email}=req.body ;
+       
+  
+      
+await  AutServices.forgotPassword(email)
+
+  
+
+
+ sendResponse(res, {
+            statusCode:httpStatus.OK,
+            message:'Email Sent sucessfully !!!',
+            sucess:true,
+            data:null,
+           
+        
+           })
+
+   })
 
 
    export const AutControllers={
@@ -199,5 +233,7 @@ await  AutServices.resetPassword (oldPassword,newPassword, decodeToken as JwtPay
     getNewAccessToken,
     logout,
    resetPassword,
-   googleCallbackController
+   setPassword,
+   googleCallbackController,
+   forgotPassword
    }

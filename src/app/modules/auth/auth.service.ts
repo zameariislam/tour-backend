@@ -1,5 +1,5 @@
 import { AppError } from "../../../errorHelpers/AppError";
-import { IsActive, IUser } from "../user/user.interface"
+import { IAuthProvider, IsActive, IUser } from "../user/user.interface"
 import { User } from "../user/user.model";
 import httpStatus from 'http-status-codes';
 import bcrypt from 'bcrypt'
@@ -8,9 +8,13 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import { generateToken, verifyToken } from "../../../utils/jwt";
 import { enVars } from "../../../config/env";
 import { createNewAccessTokenWithRefreshToken, createUserTokens } from "../../../utils/userTokens";
+import { sendEmail } from "../../../utils/sendEmail";
+
 
 
  const credentialsLogin=async (payload:Partial<IUser>)=>{
+
+   console.log('hello from login')
     const {email,password,...rest}=payload;
 
     const isUserExist= await User.findOne({email}).lean()
@@ -99,34 +103,141 @@ import { createNewAccessTokenWithRefreshToken, createUserTokens } from "../../..
  }
 
 
- const resetPassword=async (oldPassword:string, newPassword:string,decodeToken:JwtPayload)=>{
 
 
 
-  const user= await User.findById(decodeToken.id)
+const resetPassword = async (payload: Record<string, any>, decodedToken: JwtPayload) => {
+    if (payload.id !== decodedToken.id) {
+
+       console.log(payload.id, 'de',decodedToken.id)
+        throw new AppError("You can not reset your password", 401 )
+    }
+
+    const isUserExist = await User.findById(decodedToken.id)
+    if (!isUserExist) {
+        throw new AppError("User does not exist",401 )
+    }
+
+    const hashedPassword = await bcrypt.hash(
+        payload.newPassword,
+        Number(enVars.BCRYPT_SALT_ROUND)
+    )
+
+    isUserExist.password = hashedPassword;
+
+    await isUserExist.save()
+    return null
+}
+
+const setPassword=async (userId:string, plainPassword:string,)=>{
 
 
-   console.log('user avialable')
+
+  const user= await User.findById(userId)
 
 
-const isPasswordMatched= await bcrypt.compare(oldPassword, user!.password as string);
-  if(!isPasswordMatched){
+ if(!user){
 
-            throw new AppError('Old Password does not match',httpStatus.UNAUTHORIZED)
+            throw new AppError('User Not Found',404)
 
     }
 
-    
-    console.log('resetss match')
+     if(user.password&& user.auths.some((providerObject)=>providerObject.provider==='google')){
 
-    const newHashedPassword= await bcrypt.hash(newPassword,Number( enVars.BCRYPT_SALT_ROUND))
+      throw new AppError('You have already Set Your password',404)
+
+     
+
+    }
+
+      const hashedPassword= await bcrypt.hash(plainPassword,Number( enVars.BCRYPT_SALT_ROUND))
+       
+
+         const auths:IAuthProvider[]=[...user.auths,{ provider:'credentials', providerId:user.email}]
+          user!.password=hashedPassword;
+          user.auths=auths
+        user!.save()
+
+        return null
 
 
-    user!.password=newHashedPassword;
-    user!.save()
+
+ 
 
         
            }
+
+const forgotPassword=async (email:string)=>{
+
+ 
+
+  const isUserExist= await User.findOne({email})
+
+ 
+
+
+ if(!isUserExist){
+
+            throw new AppError('User Not Found',404)
+
+    }
+
+
+     if(isUserExist.isActive==IsActive.INACTIVE || isUserExist.isActive==IsActive.BLOCKED){
+                 throw new AppError(`User is ${isUserExist.isActive}`,httpStatus.BAD_REQUEST)
+               }
+                if(isUserExist.isDeleted){
+                 throw new AppError(`User is Deleted`,httpStatus.BAD_REQUEST)
+               }
+                if(!isUserExist.isVerified){
+                 throw new AppError(`User is not Verified`,httpStatus.BAD_REQUEST)
+               }
+        
+
+
+                const jwtPayload={
+                  id:isUserExist._id,
+                  email:isUserExist.email,
+                  role:isUserExist.role
+                }
+
+                 const resetToken= jwt.sign(jwtPayload,enVars.JWT_ACCESS_SECRET,{
+                  expiresIn:'10m'
+                 })
+
+                  const resetUILink= `${enVars.FRONTEND_URL}/reset-password?id=${isUserExist._id}&token=${resetToken}`
+
+                  sendEmail({
+                    to:isUserExist.email,
+                    subject:'Password reset',
+                    templateName:'forgetPassword',
+                    templateData:{
+                      name:isUserExist.name,
+                      resetUILink
+              
+                    }
+
+                  })
+    
+
+     
+
+        return null
+
+
+
+ 
+
+        
+           }
+
+
+
+
+           
+ 
+
+
 
     
     
@@ -136,5 +247,11 @@ const isPasswordMatched= await bcrypt.compare(oldPassword, user!.password as str
  export const AutServices={
     credentialsLogin,
     getNewAccessToken,
-    resetPassword
+    resetPassword,
+    setPassword,
+    forgotPassword
  }
+
+
+
+

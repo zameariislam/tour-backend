@@ -12,6 +12,7 @@ import { notFound } from './middlewares/notFound';
 import cookieParser from 'cookie-parser';
 
 import './config/passport'
+import { enVars } from './config/env';
 
 
 
@@ -27,7 +28,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-app.use(cors())
+app.use(cors({
+    origin: enVars.FRONTEND_URL,
+    credentials: true
+}))
 app.use(express.json())
 app.use(cookieParser())
 

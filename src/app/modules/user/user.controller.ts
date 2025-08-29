@@ -83,7 +83,23 @@ import { JwtPayload } from "jsonwebtoken";
    }  )
 
 
-    
+    const getMe = catchAsnc(async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user as JwtPayload
+     console.log('decodeToken',decodedToken)
+    const result = await UserServices.getMe(decodedToken.id);
+
+    // res.status(httpStatus.OK).json({
+    //     success: true,
+    //     message: "All Users Retrieved Successfully",
+    //     data: users
+    // })
+    sendResponse(res, {
+        sucess: true,
+        statusCode: httpStatus.CREATED,
+        message: "Your profile Retrieved Successfully",
+        data: result.data
+    })
+})
 
 
 
@@ -92,5 +108,6 @@ import { JwtPayload } from "jsonwebtoken";
  export const UserControllers={
     createUser,
     getAllUsers,
-    updateUser
+    updateUser,
+    getMe
  }
