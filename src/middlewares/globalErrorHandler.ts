@@ -27,7 +27,7 @@ export const globalErrorHandler= (err:any, req:Request, res:Response, next:NextF
 
 
    if(enVars.NODE_ENV==='development'){
-      // console.log(err)
+      console.log('error from global',err)
    }
 
 

@@ -8,12 +8,8 @@ import { enVars } from "../../../config/env"
 
 
 const  router=Router()
-
 router.post('/login', AutControllers.credentialsLogin)
 
-router.post('/refresh-token', AutControllers.getNewAccessToken)
-router.post('/logout', AutControllers.logout)
-router.post('/reset-password', chekAuth(...Object.values(Role)), AutControllers.resetPassword)
 router.get('/google',  (req:Request,res:Response,next:NextFunction)=>{
 
  const redirect= req.query.redirect || '/';
@@ -24,7 +20,16 @@ router.get('/google',  (req:Request,res:Response,next:NextFunction)=>{
 
 
 })
-router.get('/google/callback', passport.authenticate('google',{failureRedirect:'/login'}), AutControllers.googleCallbackController)
+router.get('/google/callback', passport.authenticate('google',{failureRedirect:`${enVars.FRONTEND_URL}/login?error=Threre is some error with your account.Please contact to support team `}), AutControllers.googleCallbackController)
+
+
+
+router.post('/refresh-token', AutControllers.getNewAccessToken)
+router.post('/logout', AutControllers.logout)
+
+router.post('/set-password', chekAuth(...Object.values(Role)), AutControllers.setPassword)
+router.post('/forgot-password', AutControllers.forgotPassword)
+router.post('/reset-password', chekAuth(...Object.values(Role)), AutControllers.resetPassword)
 
 
 

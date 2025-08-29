@@ -127,11 +127,21 @@ import { JwtPayload } from "jsonwebtoken";
 
  } 
 
+ const getMe = async (userId: string) => {
+   
+   console.log('userId',userId)
+    const user = await User.findById(userId).select('-password');
+     console.log('user',user)
+    return {
+        data: user
+    }
+};
 
 
 
  export const UserServices={
     createUserService,
     getAllUsers,
-    updateUserService
+    updateUserService,
+     getMe 
  }

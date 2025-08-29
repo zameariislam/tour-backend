@@ -36,6 +36,13 @@
         SSL_CANCEL_FRONTEND_URL: string,
        
     };
+     EMAIL_SENDER: {
+        SMTP_USER: string;
+        SMTP_PASS: string;
+        SMTP_PORT: string;
+        SMTP_HOST: string;
+        SMTP_FROM: string;
+    };
 
    
  }
@@ -72,6 +79,12 @@
         "SSL_SUCCESS_FRONTEND_URL",
         "SSL_FAIL_FRONTEND_URL",
         "SSL_CANCEL_FRONTEND_URL",
+         'SMTP_PASS',
+          "SMTP_HOST",
+        "SMTP_PORT",
+          "SMTP_USER",
+        "SMTP_FROM",
+       
         
          ]
 
@@ -113,6 +126,13 @@
         SSL_CANCEL_FRONTEND_URL: process.env.SSL_CANCEL_FRONTEND_URL as string,
       
     },
+     EMAIL_SENDER: {
+            SMTP_USER: process.env.SMTP_USER as string,
+            SMTP_PASS: process.env.SMTP_PASS as string,
+            SMTP_PORT: process.env.SMTP_PORT as string,
+            SMTP_HOST: process.env.SMTP_HOST as string,
+            SMTP_FROM: process.env.SMTP_FROM as string,
+        },
 }
     
   }

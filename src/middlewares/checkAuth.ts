@@ -49,6 +49,10 @@ export const chekAuth=(...authRoles:string[])=> async(req:Request,res:Response,n
             if(isUserExist.isDeleted){
              throw new AppError(`User is Deleted`,httpStatus.BAD_REQUEST)
            }
+            if(!isUserExist.isVerified){
+             throw new AppError(`User is not Verified`,httpStatus.BAD_REQUEST)
+           }
+    
     
 
    
