@@ -5,6 +5,7 @@ import{ Server} from 'http';
 import { enVars } from './config/env';
 import { app } from './app';
 import { seedSuperAdmin } from './utils/seedSuperAdmin';
+import { connectRedis } from './config/redis.config';
 
 
 
@@ -39,6 +40,7 @@ let server:Server
 
 (
   async ()=>{
+    await connectRedis()
     await startServer()
     seedSuperAdmin()
 
