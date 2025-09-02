@@ -19,7 +19,10 @@ export const chekAuth=(...authRoles:string[])=> async(req:Request,res:Response,n
 
        try{
 
-        const accessToken= req.headers.authorization
+        const accessToken= req.headers.authorization || req.cookies.accessToken
+    
+
+       
 
       
         

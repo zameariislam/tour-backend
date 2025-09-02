@@ -44,6 +44,9 @@ import { JwtPayload } from "jsonwebtoken";
    const createUser=  catchAsnc( async (req:Request,res:Response,next:NextFunction)=>{
 
          const user= await UserServices.createUserService(req.body)
+           
+
+    
 
            sendResponse(res, {
             statusCode:httpStatus.CREATED,
