@@ -103,6 +103,9 @@ const getNewAccessToken=catchAsnc(async (req:Request,res:Response,next:NextFunct
 const logout=catchAsnc(async (req:Request,res:Response,next:NextFunction)=>{
 
 
+     
+
+
         res.clearCookie('accessToken',{
                 httpOnly:true,
                 secure:false,

@@ -6,8 +6,12 @@ import { OTPService } from "./otp.service";
 
 
 const sendOTP = catchAsnc(async (req: Request, res: Response) => {
-    const { email, name } = req.body
-    await OTPService.sendOTP(email, name)
+    const { email } = req.body
+
+    
+
+     console.log('email from backendss controller',email)
+    await OTPService.sendOTP(email)
     sendResponse(res, {
         statusCode: 200,
         sucess: true,
@@ -17,8 +21,10 @@ const sendOTP = catchAsnc(async (req: Request, res: Response) => {
 })
 
 const verifyOTP = catchAsnc(async (req: Request, res: Response) => {
+    console.log('hello from verify otp')
     const { email, otp } = req.body;
-    await OTPService.verifyOTP(email, otp)
+  await OTPService.verifyOTP(email, otp)
+
     sendResponse(res, {
         statusCode: 200,
         sucess: true,
