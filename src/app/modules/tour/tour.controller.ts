@@ -81,6 +81,8 @@ const createTourType = catchAsnc(async (req: Request, res: Response) => {
       
     const { name } = req.body;
     const result = await TourService.createTourType(req.body);
+
+     console.log('tourtyepcontroller res',result)
     sendResponse(res, {
         statusCode: 201,
         sucess: true,

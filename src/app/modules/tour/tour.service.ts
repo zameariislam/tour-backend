@@ -237,10 +237,12 @@ const createTourType = async (payload: ITourType) => {
     const existingTourType = await TourType.findOne(payload);
 
     if (existingTourType) {
+         console.log('tourtype already available')
         throw new Error("Tour type already exists.");
     }
 
-    return await TourType.create(payload);
+    const tourType=  await TourType.create(payload);
+    return tourType
 };
 const getAllTourTypes = async () => {
     return await TourType.find();
@@ -273,4 +275,5 @@ export const TourService = {
  
     updateTour,
     deleteTour,
+    
 };
