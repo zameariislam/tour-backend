@@ -4,7 +4,15 @@
 
 export const validateRequest=  (zodSchema:ZodObject<any>) =>async (req:Request,res:Response,next:NextFunction)=>{
 
+   
+
       try{
+
+        if(req.body?.data){
+           req.body= JSON.parse(req.body?.data)
+
+        }
+      
           req.body= await zodSchema.parseAsync(req.body)
           
           next()
@@ -14,6 +22,8 @@ export const validateRequest=  (zodSchema:ZodObject<any>) =>async (req:Request,r
         next(err)
 
       }
+    
+      
 
 
 }

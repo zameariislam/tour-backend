@@ -1,8 +1,16 @@
+import { AppError } from "../../../errorHelpers/AppError";
 import { IDivision } from "./division.interface";
 import { Division } from "./division.model";
 
 
 const createDivision = async (payload: IDivision) => {
+
+     console.log('payloads',payload)
+
+
+
+
+
 
     const existingDivision = await Division.findOne({ name: payload.name });
     if (existingDivision) {

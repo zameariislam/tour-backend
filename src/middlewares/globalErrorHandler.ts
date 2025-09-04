@@ -21,13 +21,26 @@ import { handlerDuplicateError } from "../app/helpers/handleDuplicateError";
 import { handleCastError } from "../app/helpers/handleCastErrror";
 import { handlerValidationError } from "../app/helpers/handlerValidationError";
 import { TErrorSources } from "../app/interfaces/error.types";
+import { deleteImageFromCLoudinary } from "../config/cloudinary.config";
 
-export const globalErrorHandler= (err:any, req:Request, res:Response, next:NextFunction) => { 
+export const globalErrorHandler= async (err:any, req:Request, res:Response, next:NextFunction) => { 
 
 
 
    if(enVars.NODE_ENV==='development'){
       console.log('error from global',err)
+
+         
+
+   }
+
+   if(req.file){
+       await deleteImageFromCLoudinary(req.file.path)
+   }
+   if(req.files && Array.isArray(req.files) && req.files.length){
+       const imageUrls= (req.files as Express.Multer.File[]).map(file=>file.path)
+
+       await Promise.all(imageUrls.map(url=>deleteImageFromCLoudinary(url)))
    }
 
 

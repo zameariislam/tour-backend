@@ -8,13 +8,17 @@ import {
     updateDivisionSchema,
 } from "./division.validation";
 import { validateRequest } from "../../../middlewares/validateRequest";
+import { multerUpload } from "../../../config/multer.config";
 
 const router = Router()
 
 router.post(
     "/create",
-    chekAuth (Role.ADMIN, Role.SUPER_ADMIN),
-    validateRequest(createDivisionSchema),
+    // chekAuth (Role.ADMIN, Role.SUPER_ADMIN),
+  
+    multerUpload.single('file'),
+      validateRequest(createDivisionSchema),
+  
     DivisionController.createDivision
 );
 router.get("/", DivisionController.getAllDivisions);
