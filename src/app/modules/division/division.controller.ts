@@ -5,12 +5,26 @@ import { DivisionService } from "./division.service";
 
 import { sendResponse } from "../../../utils/sendResponse";
 import { catchAsnc } from "../../../utils/catchAsync";
+import { IDivision } from "./division.interface";
 
 const createDivision = catchAsnc(async (req: Request, res: Response) => {
-
-    console.log('create division')
+     
     
-    const result = await DivisionService.createDivision(req.body);
+   
+     const file=req?.file;
+
+      const payload:IDivision={
+        ...req.body,
+        thumbnail:file?.path
+      }
+
+      
+    
+
+
+    
+    const result = await DivisionService.createDivision(payload);
+
 
 
 
@@ -19,7 +33,7 @@ const createDivision = catchAsnc(async (req: Request, res: Response) => {
         statusCode: 201,
           sucess:true,
         message: "Division created",
-        data: result,
+        data:result,
     });
 });
 
